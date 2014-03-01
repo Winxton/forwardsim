@@ -1,0 +1,53 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+	<style>
+	#editor {
+		height: 500px;
+		width: 50%;
+		border: 1px black solid;
+	}
+	</style>
+</head>
+
+<body>
+	<button id="hello">Start</button>
+	<button id="stop">Stop</button>
+
+	<div id="editor"></div>
+</body>
+
+<script src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script src="{{ url_for('static', filename='ace-builds/src-noconflict/ace.js') }}"></script>
+
+<script>
+	/*setup editor*/
+	var editor = ace.edit("editor");
+	editor.setTheme("ace/theme/monokai");
+	editor.getSession().setMode("ace/mode/python");
+	editor.getSession().setTabSize(4);
+	editor.setValue("def stuff():\n    print \"OK\"\n\nstuff()");
+
+	$("#hello").click(function(){
+		var data = {};
+		data['code'] = editor.getValue();
+		var url = '/start/';
+
+		alert(JSON.stringify(data));
+
+		$.ajax({
+		  type: "POST",
+		  url: url,
+		  data: JSON.stringify(data),
+		  contentType: 'application/json; charset=utf-8',
+		  dataType: 'json',
+	  	  success: function(response) {
+			alert("success");
+		  }
+		});
+	});
+</script>
+
+</html>
