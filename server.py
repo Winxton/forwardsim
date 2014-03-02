@@ -25,7 +25,7 @@ def add_together(a, b):
 
 app = Flask(__name__)
 
-from flaskcelery.tasks import add_together
+from flaskcelery.tasks import rates
 
 # webapp
 
@@ -40,8 +40,8 @@ def start():
     data = json.loads(request.data)
     exec data['code']
     print data['code']
-    
-    result = add_together.delay(23, 42)
+
+    response = rates.delay()
 
     return "OK"
 

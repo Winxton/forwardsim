@@ -1,18 +1,19 @@
-import talib
+#import talib
 from oandapy import oandapy
+import time
 """
 Similar to zipline's algorithm class
 """
 
 class TradingAlgorithm(object):
-    def __init__(self, access_token, currency_pair=None, *args, **kwargs):
+    def __init__(self, access_token=None, currency_pair=None, *args, **kwargs):
         """
         script : str
             Algoscript that contains initialize and
             handle_data function definition.
         """
 
-        self.oanda_client = oandapy.API(environment="practice", access_token=access_token)
+        self.oanda_client = oandapy.API(environment="sandbox")
 
         self.algoscript = kwargs.pop('script', None)
 
@@ -30,7 +31,7 @@ class TradingAlgorithm(object):
         if not currency_pair:
             self.currency_pair = "EUR_USD" 
 
-        print self.oanda_client.get_accounts()
+        #print self.oanda_client.get_accounts()
 
 
     def initialize(self):
@@ -40,5 +41,12 @@ class TradingAlgorithm(object):
         self._handle_data(self)
 
     def run(self):
-        self.initialize()
-        self.handle_data()
+        current_timestamp = time.time()
+
+        while True:
+            if (time.time() - current_timestamp) >= 1:
+                response = self.oanda_client.get_prices(instruments = "EUR_USD")
+                print response
+                current_timestamp = time.time()
+        #self.initialize()
+        #self.handle_data()

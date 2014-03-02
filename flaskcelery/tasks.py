@@ -1,4 +1,7 @@
 from celery import Celery
+from alglib.oandapy import oandapy
+import time
+from alglib.algorithm import TradingAlgorithm
 
 def make_celery(app):
     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
@@ -20,7 +23,23 @@ flask_app.config.update(
 )
 celery = make_celery(flask_app)
 
-@celery.task()
-def add_together(a, b):
-    return a + b
+script = """
+def initialize(context):
+    print "HELLO"
+    context.stuff = "stuff"
+    context.max = 10000
 
+def handle_data(context):
+    print "DO STUFF"
+    print context.stuff
+    print context.max
+"""
+
+
+token = "b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22"
+
+
+@celery.task()
+def rates():
+    alg = TradingAlgorithm(script=script)
+    alg.run()
