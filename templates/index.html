@@ -28,7 +28,7 @@
 	editor.setTheme("ace/theme/monokai");
 	editor.getSession().setMode("ace/mode/python");
 	editor.getSession().setTabSize(4);
-	editor.setValue("def stuff():\n    print \"OK\"\n\nstuff()");
+	editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
 
 	$("#hello").click(function(){
 		var data = {};

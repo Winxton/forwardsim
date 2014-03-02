@@ -1,0 +1,3 @@
+!#/bin/bash
+
+celery -A flaskcelery.tasks.celery worker --loglevel=INFO
