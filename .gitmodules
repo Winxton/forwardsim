@@ -1,0 +1,6 @@
+[submodule "static/ace-builds"]
+	path = static/ace-builds
+	url = git://github.com/ajaxorg/ace-builds.git
+[submodule "alglib/oandapy"]
+	path = alglib/oandapy
+	url = git://github.com/oanda/oandapy.git
