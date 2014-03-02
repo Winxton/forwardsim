@@ -4,3 +4,6 @@
 [submodule "alglib/oandapy"]
 	path = alglib/oandapy
 	url = git://github.com/RayCui/oandapy.git
+[submodule "static/highcharts"]
+	path = static/highcharts
+	url = git://github.com/highslide-software/highcharts.com.git
