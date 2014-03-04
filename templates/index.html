@@ -1,31 +1,60 @@
-
 <!DOCTYPE html>
-<html>
 
-<head>
-    <style>
-    #editor {
-        height: 500px;
-        width: 50%;
-        border: 1px black solid;
-    }
-    </style>
-</head>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<body>
-    <button id="start">Start</button>
-    <button id="stop">Stop</button>
+    <title>hackathon</title>
 
-    <div id="editor"></div>
-    <div id="candlestick-chart"></div>
-    <div id="account-value-chart"></div>
-</body>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 
-<script src="{{ url_for('static', filename='jquery.js') }}"></script>
-<script src="{{ url_for('static', filename='ace-builds/src-noconflict/ace.js') }}"></script>
-<script src="{{ url_for('static', filename='oanda.js') }}"></script>
-<script src="{{ url_for('static', filename='highstock.js') }}"></script>
-<script src="{{ url_for('static', filename='exporting.js') }}"></script>
-<script src="{{ url_for('static', filename='indexjs.js') }}"></script>
+    <!-- Custom styles for this template -->    
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 
-</html>
+  <style type="text/css"></style></head>
+
+  <body>
+
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <div id="header-logo"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6" >
+          <button id="start">Start</button>
+          <button id="stop">Stop</button>
+          <div id='editor'> </div>
+        </div>
+        <div class="col-lg-6">
+          <div class='row'>
+             <div class="col-lg-12">
+             <div id='candlestick-chart'> </div>
+            </div>
+          </div>
+          <div class='row'>
+           <div class="col-lg-12">
+           <div id='account-value-chart'> </div>
+           </div>
+          </div>
+       </div>
+      </div>
+    </div>
+  
+    <script src="{{ url_for('static', filename='jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ace-builds/src-noconflict/ace.js') }}"></script>
+    <script src="{{ url_for('static', filename='oanda.js')}}"></script>
+    <script src="{{ url_for('static', filename='highstock.js')}}"></script>
+    <script src="{{ url_for('static', filename='exporting.js')}}"></script>
+    <script src="{{ url_for('static', filename='indexjs.js') }}"></script>  
+
+</body></html>

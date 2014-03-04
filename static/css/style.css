@@ -1,0 +1,42 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+#editor {
+    height: 500px;
+    width: auto;
+    border: 1px black solid;
+    margin-top: 10px;
+}
+
+button{
+  margin-top: 20px;
+}
+
+
+#header-logo {
+  color: transparent;
+  background-image: url(../images/logo.png);
+  width:220px; height: 40px;
+  display: inline-block;
+  margin-bottom: 5px;
+  margin-top: 10px;
+}
+
+@media (min-width: 768px) {
+  .container {
+    width: auto;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    width: auto;
+  }
+}
+  @media (min-width: 2000px) {
+  .container {
+    width: auto;
+  }
+}
