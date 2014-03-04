@@ -116,24 +116,99 @@
                 },
 
                 title : {
-                    text : 'AAPL Stock Price'
+                    text : 'Currency Pair Price'
                 },
 
                 series : [{
                     type : 'candlestick',
-                    name : 'AAPL Stock Price',
+                    name : 'Currency Pair Price',
                     data : rates,
                 }]
             });
         });
 
         OANDA.account.listSpecific(account_id, function(accountInfoResponse){
-        	console.log(accountInfoResponse);
+        	console.log(accountInfoResponse.balance);
+        	console.log(accountInfoResponse.unrealizedPl);
+        	console.log(accountInfoResponse.realizedPl);
 
-        	$('#account-value-chart').highcharts();
+        	var totalPL = accountInfoResponse.unrealizedPl + accountInfoResponse.realizedPl;
 
-	        var datetime = new Date().getTime()
-	        console.log(datetime);
+	        $('#account-value-chart').highcharts({
+	            chart: {
+	                //type: 'spline',
+	                //animation: Highcharts.svg, // don't animate in old IE
+	                //marginRight: 10,
+	                events: {
+	                    load: function() {
+	                        // set up the updating of the chart every few seconds
+	                        var series = this.series[0];
+	                        setInterval(function() {
+	                        	OANDA.account.listSpecific(account_id, function(updatedAccountInfoResponse){
+	                        		var x = new Date().getTime(); // current time
+
+	                        		var updatedTotalPL = updatedAccountInfoResponse.unrealizedPl 
+	                        							+ updatedAccountInfoResponse.realizedPl;
+
+	                        		var y = updatedTotalPL;
+	                            	
+	                            	series.addPoint([x, y], true, true);
+	                        	});
+	                        }, 5000);
+	                    }
+	                }
+	            },
+	            title: {
+	                text: 'Profit & Loss'
+	            },
+	            xAxis: {
+	                type: 'datetime',
+	                //tickPixelInterval: 150
+	            },
+	            yAxis: {
+	                title: {
+	                    text: 'Account Value ($)'
+	                },
+	                plotLines: [{
+	                    value: 0,
+	                    width: 5,
+	                    color: '#808080'
+	                }]
+	            },
+	            tooltip: {
+	                formatter: function() {
+	                        return '<b>'+ this.series.name +'</b><br/>'+
+	                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
+	                        Highcharts.numberFormat(this.y, 2);
+	                }
+	            },
+	            /*
+	            legend: {
+	                enabled: false
+	            },
+	            exporting: {
+	                enabled: false
+	            },
+	            */
+	            series: [{
+	                name: 'Account Balance',
+	                data: (function() {
+	                    // generate the initial array of data
+	                    var data = [],
+	                        time = (new Date()).getTime(),
+	                        i;
+	                    for (i = -15; i <= 0; i++) {
+	                        data.push({
+	                            x: time + i * 5000,
+	                            y: totalPL
+	                        });
+	                    }
+	                    return data;
+	                })(),
+	                color: 'green',
+	                negativeColor: '#BD5D55'
+	            }]
+	        });
         });
     }
 
