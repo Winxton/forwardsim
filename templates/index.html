@@ -3,18 +3,18 @@
 <html>
 
 <head>
-	<style>
-	#editor {
-		height: 500px;
-		width: 50%;
-		border: 1px black solid;
-	}
-	</style>
+    <style>
+    #editor {
+        height: 500px;
+        width: 50%;
+        border: 1px black solid;
+    }
+    </style>
 </head>
 
 <body>
-	<button id="start">Start</button>
-	<button id="stop">Stop</button>
+    <button id="start">Start</button>
+    <button id="stop">Stop</button>
 
     <div id="editor"></div>
     <div id="candles"></div>
@@ -29,77 +29,98 @@
 <script src="{{ url_for('static', filename='exporting.js')}}"></script>
 
 <script>
-	/*setup editor*/
-	var editor = ace.edit("editor");
-	editor.setTheme("ace/theme/monokai");
-	editor.getSession().setMode("ace/mode/python");
-	editor.getSession().setTabSize(4);
-	editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
+    /*setup editor*/
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.getSession().setMode("ace/mode/python");
+    editor.getSession().setTabSize(4);
+    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
 
-	$("#start").click(function(){
-		var data = {};
-		data['code'] = editor.getValue();
-		var url = '/start/';
+    $("#start").click(function(){
+        var data = {};
+        data['code'] = editor.getValue();
+        var url = '/start/';
 
-		alert(JSON.stringify(data));
+        alert(JSON.stringify(data));
 
-		$.ajax({
-		  type: "POST",
-		  url: url,
-		  data: JSON.stringify(data),
-		  contentType: 'application/json; charset=utf-8',
-		  dataType: 'json'
-		});
-	});
+        $.ajax({
+          type: "POST",
+          url: url,
+          data: JSON.stringify(data),
+          contentType: 'application/json; charset=utf-8',
+          dataType: 'json'
+        });
+    });
 
-	$("#stop").click(function(){
-		var url = '/stop/';
+    $("#stop").click(function(){
+        var url = '/stop/';
 
-		alert("starting to stop");
+        alert("starting to stop");
 
-		$.ajax({
-		  type: "POST",
-		  url: url,
-		  contentType: 'application/json; charset=utf-8',
-	  	  success: function(response) {
-			alert("stopped");
-		  }
-		});
-	});
+        $.ajax({
+          type: "POST",
+          url: url,
+          contentType: 'application/json; charset=utf-8',
+          success: function(response) {
+            alert("stopped");
+          }
+        });
+    });
 
-	function getHistory() {
+    var rates = new Array();
+
+    // $(function() {
+    //     $('#container').highcharts('StockChart', {
+    //         title : {
+    //             text : 'AAPL Stock Price'
+    //         },
+
+    //         series : [{
+    //             type : 'candlestick',
+    //             name : 'AAPL Stock Price',
+    //             data : rates,
+    //         }]
+    //     });
+    // });
+
+    function getHistory() {
         OANDA.rate.history("EUR_USD", {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             var priceInfo = rateHistoryResponse.candles[0];
             rates.push(ParseToArray(priceInfo));
             $("#candles").text("time: " + priceInfo.time + "\nopenMid: " + priceInfo.openMid + "\nhighMid: " + priceInfo.highMid + "\nlowMid: " + priceInfo.lowMid + "\ncloseMid: " + priceInfo.closeMid);
         });
     }
+    
     function ParseToArray(rate) {
         var testarray = new Array();
         testarray = [Date.parse(rate.time), rate.openMid, rate.highMid, rate.lowMid, rate.closeMid];
         return testarray
     }
 
-    $(function() {
-        // create the chart
-        $('#container').highcharts('StockChart', {
-            
+    function constructor() {
+        OANDA.rate.history("EUR_USD", {count: 20, candleFormat: "midpoint"}, function(rateHistoryResponse) {
+            i = 0;
+            var priceInfo;
+            for (i; i < 20; i++) {
+                priceInfo = rateHistoryResponse.candles[i];
+                rates.push(ParseToArray(priceInfo));
+            }
 
-            rangeSelector : {
-                selected : 1
-            },
+            $('#container').highcharts('StockChart', {
+                title : {
+                    text : 'AAPL Stock Price'
+                },
 
-            title : {
-                text : 'AAPL Stock Price'
-            },
-
-            series : [{
-                type : 'candlestick',
-                name : 'AAPL Stock Price',
-                data : rates,
-            }]
+                series : [{
+                    type : 'candlestick',
+                    name : 'AAPL Stock Price',
+                    data : rates,
+                }]
+            });
         });
-    });
+    }
+
+    constructor();
 
     // function updatechart() {
     //     var chart = $('#container').highcharts();
@@ -115,28 +136,8 @@
     //     chart.redraw();
     // }
 
-    function updatechart() {
-        $('#container').highcharts('StockChart', {
-            
-
-            rangeSelector : {
-                selected : 1
-            },
-
-            title : {
-                text : 'AAPL Stock Price'
-            },
-
-            series : [{
-                type : 'candlestick',
-                name : 'AAPL Stock Price',
-                data : rates,
-            }]
-        });
-    }
-
     setInterval(getHistory, 5000);
-    setInterval(updatechart, 5000);
+    // setInterval(updatechart, 5000);
 
 </script>
 
