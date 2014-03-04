@@ -18,6 +18,7 @@
 
     <div id="editor"></div>
     <div id="candlestick-chart"></div>
+    <div id="account-value-chart"></div>
 </body>
 
 <script src="{{ url_for('static', filename='jquery.js') }}"></script>
@@ -27,12 +28,10 @@
 <script src="{{ url_for('static', filename='exporting.js')}}"></script>
 
 <script>
-/*
 	OANDA.baseURL = "https://api-fxpractice.oanda.com";
 	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
 	OANDA.auth.enabled = true;
 	var account_id = 3922748;
-*/
 
     /*setup editor*/
     var editor = ace.edit("editor");
@@ -41,6 +40,7 @@
     editor.getSession().setTabSize(4);
     editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
 
+    /* start and stop functions */
     $("#start").click(function(){
         var data = {};
         data['code'] = editor.getValue();
@@ -72,28 +72,34 @@
         });
     });
 
+    /* charts for candlesticks and portfolio value */
     var rates = new Array();
+    var account_value = new Array();
 
     function getHistory() {
         OANDA.rate.history("EUR_USD", {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             var priceInfo = rateHistoryResponse.candles[0];
-            rates.push(ParseToArray(priceInfo));
+            rates.push(parseOandaHistoryToArray(priceInfo));
         });
     }
     
-    function ParseToArray(rate) {
+    function getAccountInfo() {
+
+    }
+
+    function parseOandaHistoryToArray(rate) {
         var testarray = new Array();
         testarray = [Date.parse(rate.time), rate.openMid, rate.highMid, rate.lowMid, rate.closeMid];
         return testarray
     }
 
     function constructor() {
+    	// initialize with oanda historical candles and dynamically update
         OANDA.rate.history("EUR_USD", {count: 20, candleFormat: "midpoint"}, function(rateHistoryResponse) {
-            i = 0;
             var priceInfo;
-            for (i; i < 20; i++) {
+            for (var i =0 ; i < 20; i++) {
                 priceInfo = rateHistoryResponse.candles[i];
-                rates.push(ParseToArray(priceInfo));
+                rates.push(parseOandaHistoryToArray(priceInfo));
             }
 
             $('#candlestick-chart').highcharts('StockChart', {
@@ -119,6 +125,15 @@
                     data : rates,
                 }]
             });
+        });
+
+        OANDA.account.listSpecific(account_id, function(accountInfoResponse){
+        	console.log(accountInfoResponse);
+
+        	$('#account-value-chart').highcharts();
+
+	        var datetime = new Date().getTime()
+	        console.log(datetime);
         });
     }
 
