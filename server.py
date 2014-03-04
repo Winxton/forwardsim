@@ -1,7 +1,9 @@
 from flask import Flask
 from flask import render_template
-from flask import request
+from flask import request, session
+
 from celery import Celery
+from celery.task.control import revoke
 import json
 
 """
@@ -24,6 +26,7 @@ def add_together(a, b):
 """
 
 app = Flask(__name__)
+app.secret_key = 'some random secret key'
 
 from flaskcelery.tasks import rates
 
@@ -37,13 +40,45 @@ def index():
 def start():
     print request.path
     print request.method
-    data = json.loads(request.data)
-    exec data['code']
-    print data['code']
 
-    response = rates.delay()
+    # temporarily store session (very hacky, should store in DB)
+    print session
+
+    data = json.loads(request.data)
+    
+    #exec data['code']
+    #print data['code']
+
+    task_id = rates.delay().id
+    session['TASK_ID'] = task_id
+
+    print task_id
 
     return "OK"
+
+@app.route("/stop/", methods=['POST'])
+def stop():
+    print "stuff123"
+    print session
+
+    response = {}
+    response['status'] = 'fail'
+
+    # a task is already running
+    if "TASK_ID" not in session:
+        response['status'] = 'no_task_running'
+    else:
+        task_id = session['TASK_ID']
+        print ("A task is running with id: %s" % task_id)
+        revoke(task_id, terminate=True)
+        print ("TASK REVOKED")
+
+        del(session['TASK_ID'])
+        response['status'] = 'task_stopped'
+
+    print response
+
+    return json.dumps(response)
 
 if __name__ == "__main__":
     app.debug = True
