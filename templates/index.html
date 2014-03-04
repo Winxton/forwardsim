@@ -74,25 +74,10 @@
 
     var rates = new Array();
 
-    // $(function() {
-    //     $('#candlestick-chart').highcharts('StockChart', {
-    //         title : {
-    //             text : 'AAPL Stock Price'
-    //         },
-
-    //         series : [{
-    //             type : 'candlestick',
-    //             name : 'AAPL Stock Price',
-    //             data : rates,
-    //         }]
-    //     });
-    // });
-
     function getHistory() {
         OANDA.rate.history("EUR_USD", {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             var priceInfo = rateHistoryResponse.candles[0];
             rates.push(ParseToArray(priceInfo));
-            $("#candles").text("time: " + priceInfo.time + "\nopenMid: " + priceInfo.openMid + "\nhighMid: " + priceInfo.highMid + "\nlowMid: " + priceInfo.lowMid + "\ncloseMid: " + priceInfo.closeMid);
         });
     }
     
@@ -112,6 +97,18 @@
             }
 
             $('#candlestick-chart').highcharts('StockChart', {
+                chart : {
+                    events : {
+                        load : function() {
+                            var series = this.series[0];
+                            setInterval(function() {
+                                getHistory();
+                                series.addPoint(rates[rates.length - 1], true, true);
+                            }, 5000);
+                        }
+                    }
+                },
+
                 title : {
                     text : 'AAPL Stock Price'
                 },
@@ -126,23 +123,6 @@
     }
 
     constructor();
-
-    // function updatechart() {
-    //     var chart = $('#candlestick-chart').highcharts();
-    //     //     i = 0,
-    //     //     series = chart.series[0];
-    //     // for (i; i < rates.length; i++) {
-    //     //     series.addPoint(rates[i], false);
-    //     // }
-    //     // chart.redraw();
-    //     series = chart.series;
-    //     // $("#test1").text(rates);
-    //     series.addPoint(rates[rates.length - 1], false);
-    //     chart.redraw();
-    // }
-
-    setInterval(getHistory, 5000);
-    // setInterval(updatechart, 5000);
 
 </script>
 
