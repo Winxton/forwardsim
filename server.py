@@ -38,10 +38,10 @@ def start():
     print request.path
     print request.method
     data = json.loads(request.data)
-    exec data['code']
+
     print data['code']
 
-    response = rates.delay()
+    response = rates.delay(data['code'])
 
     return "OK"
 
