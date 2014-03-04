@@ -16,8 +16,10 @@
 	<button id="start">Start</button>
 	<button id="stop">Stop</button>
 
-	<div id="editor"></div>
-	<div id="candles"></div>
+    <div id="editor"></div>
+    <div id="candles"></div>
+    <div id="container"></div>
+    <div id="test1"></div>
 </body>
 
 <script src="{{ url_for('static', filename='jquery.js') }}"></script>
@@ -68,11 +70,73 @@
 	function getHistory() {
         OANDA.rate.history("EUR_USD", {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             var priceInfo = rateHistoryResponse.candles[0];
-            $("#candles").text("time: " + priceInfo.time + "\nopenMid: " + priceInfo.openMid + "\nhighMid: " + priceInfo.highMid + "\nlowMid: " + priceInfo.lowMid + "\ncloseMid: " + priceInfo.closeMid + "\nvolume: " + priceInfo.volume + "\ncomplete: " + priceInfo.complete);
-
+            rates.push(ParseToArray(priceInfo));
+            $("#candles").text("time: " + priceInfo.time + "\nopenMid: " + priceInfo.openMid + "\nhighMid: " + priceInfo.highMid + "\nlowMid: " + priceInfo.lowMid + "\ncloseMid: " + priceInfo.closeMid);
         });
     }
-    setInterval(getHistory, 1000);
+    function ParseToArray(rate) {
+        var testarray = new Array();
+        testarray = [Date.parse(rate.time), rate.openMid, rate.highMid, rate.lowMid, rate.closeMid];
+        return testarray
+    }
+
+    $(function() {
+        // create the chart
+        $('#container').highcharts('StockChart', {
+            
+
+            rangeSelector : {
+                selected : 1
+            },
+
+            title : {
+                text : 'AAPL Stock Price'
+            },
+
+            series : [{
+                type : 'candlestick',
+                name : 'AAPL Stock Price',
+                data : rates,
+            }]
+        });
+    });
+
+    // function updatechart() {
+    //     var chart = $('#container').highcharts();
+    //     //     i = 0,
+    //     //     series = chart.series[0];
+    //     // for (i; i < rates.length; i++) {
+    //     //     series.addPoint(rates[i], false);
+    //     // }
+    //     // chart.redraw();
+    //     series = chart.series;
+    //     // $("#test1").text(rates);
+    //     series.addPoint(rates[rates.length - 1], false);
+    //     chart.redraw();
+    // }
+
+    function updatechart() {
+        $('#container').highcharts('StockChart', {
+            
+
+            rangeSelector : {
+                selected : 1
+            },
+
+            title : {
+                text : 'AAPL Stock Price'
+            },
+
+            series : [{
+                type : 'candlestick',
+                name : 'AAPL Stock Price',
+                data : rates,
+            }]
+        });
+    }
+
+    setInterval(getHistory, 5000);
+    setInterval(updatechart, 5000);
 
 </script>
 
