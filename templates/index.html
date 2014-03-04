@@ -13,7 +13,7 @@
 </head>
 
 <body>
-	<button id="hello">Start</button>
+	<button id="start">Start</button>
 	<button id="stop">Stop</button>
 
 	<div id="editor"></div>
@@ -34,7 +34,7 @@
 	editor.getSession().setTabSize(4);
 	editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
 
-	$("#hello").click(function(){
+	$("#start").click(function(){
 		var data = {};
 		data['code'] = editor.getValue();
 		var url = '/start/';
@@ -46,9 +46,21 @@
 		  url: url,
 		  data: JSON.stringify(data),
 		  contentType: 'application/json; charset=utf-8',
-		  dataType: 'json',
+		  dataType: 'json'
+		});
+	});
+
+	$("#stop").click(function(){
+		var url = '/stop/';
+
+		alert("starting to stop");
+
+		$.ajax({
+		  type: "POST",
+		  url: url,
+		  contentType: 'application/json; charset=utf-8',
 	  	  success: function(response) {
-			alert("success");
+			alert("stopped");
 		  }
 		});
 	});
