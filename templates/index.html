@@ -17,9 +17,7 @@
     <button id="stop">Stop</button>
 
     <div id="editor"></div>
-    <div id="candles"></div>
-    <div id="container"></div>
-    <div id="test1"></div>
+    <div id="candlestick-chart"></div>
 </body>
 
 <script src="{{ url_for('static', filename='jquery.js') }}"></script>
@@ -29,6 +27,13 @@
 <script src="{{ url_for('static', filename='exporting.js')}}"></script>
 
 <script>
+/*
+	OANDA.baseURL = "https://api-fxpractice.oanda.com";
+	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
+	OANDA.auth.enabled = true;
+	var account_id = 3922748;
+*/
+
     /*setup editor*/
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
@@ -70,7 +75,7 @@
     var rates = new Array();
 
     // $(function() {
-    //     $('#container').highcharts('StockChart', {
+    //     $('#candlestick-chart').highcharts('StockChart', {
     //         title : {
     //             text : 'AAPL Stock Price'
     //         },
@@ -106,7 +111,7 @@
                 rates.push(ParseToArray(priceInfo));
             }
 
-            $('#container').highcharts('StockChart', {
+            $('#candlestick-chart').highcharts('StockChart', {
                 title : {
                     text : 'AAPL Stock Price'
                 },
@@ -123,7 +128,7 @@
     constructor();
 
     // function updatechart() {
-    //     var chart = $('#container').highcharts();
+    //     var chart = $('#candlestick-chart').highcharts();
     //     //     i = 0,
     //     //     series = chart.series[0];
     //     // for (i; i < rates.length; i++) {
