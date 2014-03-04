@@ -75,11 +75,12 @@
     /* charts for candlesticks and portfolio value */
     var rates = new Array();
     var account_value = new Array();
+    var newtick;
+    var lasttick;
 
     function getHistory() {
         OANDA.rate.history("EUR_USD", {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
-            var priceInfo = rateHistoryResponse.candles[0];
-            rates.push(parseOandaHistoryToArray(priceInfo));
+            newtick = parseOandaHistoryToArray(rateHistoryResponse.candles[0]);
         });
     }
     
@@ -93,14 +94,16 @@
         return testarray
     }
 
-    function constructor() {
+    function initialize() {
     	// initialize with oanda historical candles and dynamically update
         OANDA.rate.history("EUR_USD", {count: 20, candleFormat: "midpoint"}, function(rateHistoryResponse) {
-            var priceInfo;
-            for (var i =0 ; i < 20; i++) {
-                priceInfo = rateHistoryResponse.candles[i];
-                rates.push(parseOandaHistoryToArray(priceInfo));
+            var price;
+            for (var i = 0 ; i < 20; i++) {
+                price = rateHistoryResponse.candles[i];
+                rates.push(parseOandaHistoryToArray(price));
             }
+            lasttick = rates[19];
+            newtick = lasttick;
 
             $('#candlestick-chart').highcharts('StockChart', {
                 chart : {
@@ -109,8 +112,11 @@
                             var series = this.series[0];
                             setInterval(function() {
                                 getHistory();
-                                series.addPoint(rates[rates.length - 1], true, true);
-                            }, 5000);
+                                if (lasttick.toString() != newtick.toString()) {
+                                    series.addPoint(newtick, true, true);
+                                    lasttick = newtick;
+                                }
+                            }, 3000);
                         }
                     }
                 },
@@ -132,12 +138,12 @@
 
         	$('#account-value-chart').highcharts();
 
-	        var datetime = new Date().getTime()
+	        var datetime = new Date().getTime();
 	        console.log(datetime);
         });
     }
 
-    constructor();
+    initialize();
 
 </script>
 
