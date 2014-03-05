@@ -12,6 +12,8 @@ body {
 
 #history{
   width:auto;
+  overflow:auto;
+  max-height: 110px;
 }
 
 html, body{
