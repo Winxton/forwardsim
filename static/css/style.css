@@ -46,6 +46,10 @@ button{
   float: left;
 }
 
+#alg_running_label {
+  display: none;
+}
+
 .col-lg-6, .col-lg-12{
     background-color: #222222;
     border-style:solid;
