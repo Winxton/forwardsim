@@ -63,7 +63,7 @@ class TradingAlgorithm(object):
             closeArray.append(item["closeMid"])
             highArray.append(item["highMid"])
             lowArray.append(item["lowMid"])
-            volumeArray.append(item["volume"])
+            volumeArray.append(float(item["volume"]))
 
         tadic = {}
         openArray = np.asarray(openArray)
@@ -115,8 +115,16 @@ class TradingAlgorithm(object):
         data = data['volume']
         output = talib.WMA(data, timeperiod = timeperiod)
         result = output.tolist()
-        avg = result[-1]
+        new_list = []
+        for item in result :
+            new_list.append(float(item))
+
+        avg = new_list[-1]
         return avg
+
+    def position (self) :
+        pos_dic = self.oanda_client.get_position(account_id = self.account_id, instrument = self.currency_pair)
+        return pos_dic["units"] * pos_dic["avgPrice"]
 
     #Execution
     def run(self):
@@ -144,7 +152,8 @@ class TradingAlgorithm(object):
                 """
 
                 current_timestamp = time.time()
-                
+                print (current_timestamp)
+
                 self.handle_data(data)
 
                 self.plotdata['time'] = current_timestamp
