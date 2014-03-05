@@ -41,6 +41,7 @@ def yielder():
         yield data
 
 @celery.task()
+
 def rates():
     for progress in yielder():
         # set current progress on the task
@@ -49,7 +50,9 @@ def rates():
             progress=progress)
         print progress
 
-    """
+"""
+=======
+def rates(script):
     alg = TradingAlgorithm(script=script)
     alg.run()
-    """
+"""

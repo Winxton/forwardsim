@@ -42,11 +42,9 @@ def index():
 def start():
     # temporarily store session (very hacky, should store in DB)
     data = json.loads(request.data)
-    
-    #TODO: send data to task
-    task = rates.delay()
 
-    task_id = task.id
+    task_id = rates.delay(data['code']).id
+
     session['TASK_ID'] = task_id
 
     return "OK"
