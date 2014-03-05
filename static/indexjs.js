@@ -190,7 +190,7 @@
                 },
 
                 title : {
-                    text : 'Currency Pair Price',
+                    text : 'Currency Pair Price: ' + currency_pair,
                     style: {
                         color: "#94d600"
                     }
