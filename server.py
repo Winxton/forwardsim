@@ -67,7 +67,7 @@ def start():
     #exec data['code']
     #print data['code']
 
-    task_id = rates.delay(data['code']).id
+    task_id = rates.delay(data['code'], data['currency_pair']).id
     session['TASK_ID'] = task_id
 
     print task_id

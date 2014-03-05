@@ -16,6 +16,7 @@
     $("#start").click(function(){
         var data = {};
         data['code'] = editor.getValue();
+        data['currency_pair'] = currency_pair;
         alert(JSON.stringify(data));
 
         $.ajax({
@@ -34,8 +35,24 @@
               candlechart.addSeries({
                 id: plotName,
                 name: plotName,
-                data: []
-              });
+                type: 'spline',
+                xAxis: {
+                   type: 'datetime',
+                },
+                data: (function() {
+                    // generate the initial array of data
+                    var data = [],
+                        time = (new Date()).getTime(),
+                        i;
+                    for (i = -1; i <= 0; i++) {
+                        data.push({
+                            x: time + i * 5000,
+                            y: 1.3719+0.0001*i
+                        });
+                    }
+                    return data;
+                })()
+              }, false);
             }
 
             // make a request for the line every few seconds
@@ -50,7 +67,6 @@
                         var plotdata = response.data;
                         var time = Math.round(plotdata.time);
                         var time2 = new Date().getTime();
-                        alert(time2);
 
                         // go through datapoints
                         for (data in plotdata.values) {
@@ -66,7 +82,9 @@
 
                           var series = candlechart.get(name);
                           console.log(point);
-                          series.addPoint(point);
+
+                          series.addPoint([time, val], true, false);
+                          candlechart.redraw();
                         }
 
                       }
@@ -88,7 +106,7 @@
           url: url,
           contentType: 'application/json; charset=utf-8',
           success: function(response) {
-            alert("STOPPED");
+            console.log("stopped!");
           }
         });
     });
@@ -252,8 +270,8 @@
                   },
 
 
-
                 xAxis: {
+                      type: 'datetime',
                       gridLineWidth: 0.5,
                       gridLineColor: '#888888',
                       lineColor: '#888888',
@@ -347,7 +365,7 @@
 	            },
 	            xAxis: {
 	                type: 'datetime',
-	                //tickPixelInterval: 150
+	                tickPixelInterval: 150
 	            },
 	            yAxis: {
 	                title: {
@@ -368,7 +386,7 @@
 	            },
 
                 title : {
-                    text : 'Currency Pair Price',
+                    text : 'Profit & Loss',
                     style: {
                         color: "#94d600"
                     }

@@ -13,7 +13,7 @@ Similar to zipline's algorithm class
 """
 
 class TradingAlgorithm(object):
-    def __init__(self, access_token=None, currency_pair=None, *args, **kwargs):
+    def __init__(self, currency_pair=None, access_token=None, *args, **kwargs):
         """
         script : str
             Algoscript that contains initialize and
@@ -21,8 +21,7 @@ class TradingAlgorithm(object):
         """
 
         # just one pair for now
-        if not currency_pair:
-            self.currency_pair = "USD_JPY" 
+        self.currency_pair = currency_pair
 
         self.oanda_client = oandapy.API(environment="practice",access_token="b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22")
 
@@ -97,12 +96,11 @@ class TradingAlgorithm(object):
         return avg
 
     def order (self, units, side, **params):
-        trade_expire = datetime.now() + timedelta(days=1)
-        trade_expire = trade_expire.isoformat("T") + "Z"
-        return self.oanda_client.create_order(instrument = self.currency_pair, account_id = 3922748, units = units, side = side, type = "limit", expiry = trade_expire, price = 1.15)
+        return self.oanda_client.create_order(instrument = self.currency_pair, account_id = self.account_id, units = units, side = side, type = "market")
 
     def get_current_close (self, **params):
         return self.oanda_client.get_history(instrument = self.currency_pair,granularity = "S5",count = 1,candleFormat = "midpoint")["candles"][0]["closeMid"]
+    
     def initialize(self):
         self._initialize(self)
 

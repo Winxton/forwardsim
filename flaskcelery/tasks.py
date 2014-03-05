@@ -26,8 +26,8 @@ flask_app.config.update(
 celery = make_celery(flask_app)
 
 @celery.task()
-def rates(script):
-    alg = TradingAlgorithm(script=script)
+def rates(script, currency_pair):
+    alg = TradingAlgorithm(script=script, currency_pair=currency_pair)
     for plotdata in alg.run():
         rates.backend.mark_as_started(
                     rates.request.id,
