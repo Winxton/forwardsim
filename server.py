@@ -45,21 +45,14 @@ def start():
     print session
 
     data = json.loads(request.data)
-<<<<<<< HEAD
 
-    print data['code']
-
-    response = rates.delay(data['code'])
-=======
-    
     #exec data['code']
     #print data['code']
 
-    task_id = rates.delay().id
+    task_id = rates.delay(data['code']).id
     session['TASK_ID'] = task_id
 
     print task_id
->>>>>>> origin/master
 
     return "OK"
 

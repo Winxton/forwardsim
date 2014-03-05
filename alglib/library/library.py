@@ -4,6 +4,7 @@ from talib.abstract import *
 
 from alglib.oandapy import oandapy
 import time
+from datetime import datetime, timedelta
 
 class TradingLibrary(object):
 	
@@ -47,12 +48,24 @@ class TradingLibrary(object):
 		return tadic
 
 	def stddev(self, data, **params):
-		dev = talib.STDDEV(data,price = "closeMid")
-		return dev
+		data = data['close']
+		data = np.std(a=data)
+		return data
 
-	def mavg (self, data, timeperiod, **params):
+	def mavg (self, data,timeperiod, **params):
+		data = data['close']
 		output = talib.SMA(data, timeperiod = timeperiod)
-		return output
+		result = output.tolist()
+		avg = result[-1]
+		return avg
+
+	def order (self, units, side, **params):
+		trade_expire = datetime.now() + timedelta(days=1)
+		trade_expire = trade_expire.isoformat("T") + "Z"
+		return self.oanda_client.create_order(instrument = "EUR_USD", account_id = 3922748, units = units, side = side, type = "limit", expiry = trade_expire, price = 1.15)
+
+	def get_current_close (self, **params):
+		return self.oanda_client.get_history(instrument = "EUR_USD",granularity = "S5",count = 1,candleFormat = "midpoint")["candles"][0]["closeMid"]
 
 
 
