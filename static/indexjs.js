@@ -1,6 +1,5 @@
 
     OANDA.baseURL = "https://api-fxpractice.oanda.com";
-
   	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
   	OANDA.auth.enabled = true;
   	var account_id = 3922748;
@@ -12,12 +11,14 @@
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setTabSize(4);
     editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context, data):\n    # handles a data event\n    # put your algorithm here and make trades\n    mavg = context.mavg(data, timeperiod=3)\n    context.plot(mavg, 'mavg')\n\n    print context.units\n");
+    editor.setFontSize(20);
+
     /* start and stop functions */
     $("#start").click(function(){
         var data = {};
         data['code'] = editor.getValue();
         data['currency_pair'] = currency_pair;
-        alert(JSON.stringify(data));
+        console.log(JSON.stringify(data));
 
         $.ajax({
           type: "POST",
@@ -34,24 +35,10 @@
 
               candlechart.addSeries({
                 id: plotName,
+                color: '#FFF',
                 name: plotName,
                 type: 'spline',
-                xAxis: {
-                   type: 'datetime',
-                },
-                data: (function() {
-                    // generate the initial array of data
-                    var data = [],
-                        time = (new Date()).getTime(),
-                        i;
-                    for (i = -1; i <= 0; i++) {
-                        data.push({
-                            x: time + i * 5000,
-                            y: 1.3719+0.0001*i
-                        });
-                    }
-                    return data;
-                })()
+                data: []
               }, false);
             }
 
@@ -83,15 +70,19 @@
                           var series = candlechart.get(name);
                           console.log(point);
 
-                          series.addPoint([time, val], true, false);
+                          var x = new Date().getTime();
+                          console.log(x);
+
+                          series.addPoint([x, val], true, false);
                           candlechart.redraw();
+
                         }
 
                       }
                     },
                     dataType: 'json'
                 });
-            }, 10000);
+            }, 5000);
 
           },
           dataType: 'json'
@@ -148,7 +139,8 @@
         return testarray
     }
 
-    function initialize() {
+    function initialize() 
+    {
     	// initialize with oanda historical candles and dynamically update
         OANDA.rate.history(currency_pair, {count: 20, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             var price;
@@ -174,7 +166,7 @@
                                 getHistory();
                                 getTransactionHistory();
                                 if (lasttick.toString() != newtick.toString()) {
-                                    series.addPoint(newtick, true, false);
+                                    series.addPoint(newtick, true, true);
                                     lasttick = newtick;
                                 }
                             }, 5000);
@@ -324,6 +316,7 @@
                     data : rates,
                 }]
             });
+
         });
 
         OANDA.account.listSpecific(account_id, function(accountInfoResponse){
@@ -541,7 +534,10 @@
 	            }]
 	        });
         });
-	getLatestTransaction();
+
+
+      
+	     getLatestTransaction();
     }
 
     initialize();
