@@ -3,6 +3,8 @@ from flask import render_template
 from flask import request, session
 
 from celery import Celery
+from celery.result import AsyncResult
+
 from celery.task.control import revoke
 import json
 
@@ -38,21 +40,14 @@ def index():
 
 @app.route("/start/", methods=['POST'])
 def start():
-    print request.path
-    print request.method
-
     # temporarily store session (very hacky, should store in DB)
-    print session
-
     data = json.loads(request.data)
     
-    #exec data['code']
-    #print data['code']
+    #TODO: send data to task
+    task = rates.delay()
 
-    task_id = rates.delay().id
+    task_id = task.id
     session['TASK_ID'] = task_id
-
-    print task_id
 
     return "OK"
 
@@ -73,12 +68,27 @@ def stop():
         revoke(task_id, terminate=True)
         print ("TASK REVOKED")
 
-        del(session['TASK_ID'])
+        # session['TASK_ID'] = None
         response['status'] = 'task_stopped'
 
     print response
 
     return json.dumps(response)
+
+@app.route("/view-data/", methods=['GET', 'POST'])
+def view_data():
+    if "TASK_ID" not in session:
+        #response['status'] = 'no_task_running'
+        print "no task running"
+    else:
+        task_id = session['TASK_ID']
+        print "TASK ID", task_id
+
+        task = rates.AsyncResult(task_id)
+        print task.info
+        # print type(task.info['progress'])
+
+    return "OK"
 
 if __name__ == "__main__":
     app.debug = True

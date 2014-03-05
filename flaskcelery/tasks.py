@@ -3,9 +3,15 @@ from alglib.oandapy import oandapy
 import time
 from alglib.algorithm import TradingAlgorithm
 
+from celery.backends.base import BaseBackend
+
 def make_celery(app):
     celery = Celery(app.import_name, broker=app.config['CELERY_BROKER_URL'])
     celery.conf.update(app.config)
+
+    #backend = BaseBackend(app)
+    #print dir(backend)
+
     TaskBase = celery.Task
     class ContextTask(TaskBase):
         abstract = True
@@ -20,26 +26,30 @@ from flask import Flask
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL='amqp://guest@localhost//',
+    CELERY_RESULT_BACKEND = 'amqp',
+    CELERY_IGNORE_RESULT = False
 )
+
 celery = make_celery(flask_app)
+#celery = Celery("tasks", broker='amqp://guest@localhost//', backend="amqp", ignore_result=False)
 
-script = """
-def initialize(context):
-    print "HELLO"
-    context.stuff = "stuff"
-    context.max = 10000
-
-def handle_data(context):
-    print "DO STUFF"
-    print context.stuff
-    print context.max
-"""
-
-
-token = "b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22"
-
+def yielder():
+    for i in range(2**10):
+        time.sleep(2)
+        data = {}
+        data['plot1'] = i
+        yield data
 
 @celery.task()
 def rates():
+    for progress in yielder():
+        # set current progress on the task
+        rates.backend.mark_as_started(
+            rates.request.id,
+            progress=progress)
+        print progress
+
+    """
     alg = TradingAlgorithm(script=script)
     alg.run()
+    """
