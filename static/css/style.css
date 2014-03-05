@@ -16,7 +16,7 @@ html, body{
 #editor {
     height: 783px;
     width: auto;
-    margin-top: 10px;
+    margin-top: 10px;Z
 }
 
 #candlestick-chart {
@@ -33,6 +33,13 @@ html, body{
 
 button{
   margin-top: 10px;
+}
+
+#timeperiod {
+  margin-top: 10px;
+  margin-right: 2px;
+  width: 150px;
+  float: left;
 }
 
 .col-lg-6, .col-lg-12{
