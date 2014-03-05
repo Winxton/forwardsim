@@ -5,14 +5,16 @@ body {
 }
 
 .navbar .container{
-  box-shadow: 0px 4px 5px #000000;
+  box-shadow: 0px 2px 2px #111111;
+  height: 40px;
+  background-color: #101010;
 }
 
 html, body{
-  background-color: #404040;
+  background-color: #222222;
 }
 #editor {
-    height: 780px;
+    height: 783px;
     width: auto;
     margin-top: 10px;
 }
@@ -20,7 +22,7 @@ html, body{
 #candlestick-chart {
     width: auto;
     height: 385px;
-    margin-top: 65px;
+    margin-top: 45px;
 }
 
 #account-value-chart {
@@ -30,16 +32,18 @@ html, body{
 }
 
 button{
-  margin-top: 30px;
+  margin-top: 10px;
 }
 
 .col-lg-6, .col-lg-12{
-    background-color: #404040;
+    background-color: #222222;
+    border-style:solid;
+    border-width:1px;
 }
 #header-logo {
   color: transparent;
   background-image: url(../images/logo.png);
-  width:220px; height: 40px;
+  width:112px; height: 20px;
   display: inline-block;
   margin-bottom: 5px;
   margin-top: 10px;
