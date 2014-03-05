@@ -90,10 +90,10 @@
                             setInterval(function() {
                                 getHistory();
                                 if (lasttick.toString() != newtick.toString()) {
-                                    series.addPoint(newtick, true, true);
+                                    series.addPoint(newtick, true, false);
                                     lasttick = newtick;
                                 }
-                            }, 3000);
+                            }, 5000);
                         }
                     },
 
@@ -269,10 +269,8 @@
 
 	                        		var updatedTotalPL = updatedAccountInfoResponse.unrealizedPl 
 	                        							+ updatedAccountInfoResponse.realizedPl;
-
 	                        		var y = updatedTotalPL;
-	                            	
-	                            	series.addPoint([x, y], true, true);
+	                        	series.addPoint([x, y], true, false);
 	                        	});
 	                        }, 5000);
 	                    }
