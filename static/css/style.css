@@ -10,11 +10,15 @@ body {
   background-color: #101010;
 }
 
+#history{
+  width:auto;
+}
+
 html, body{
   background-color: #222222;
 }
 #editor {
-    height: 783px;
+    height: 608px;
     width: auto;
     margin-top: 10px;
 }
