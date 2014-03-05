@@ -1,219 +1,60 @@
-
 <!DOCTYPE html>
-<html>
 
-<head>
-    <style>
-    #editor {
-        height: 500px;
-        width: 50%;
-        border: 1px black solid;
-    }
-    </style>
-</head>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-<body>
-    <button id="start">Start</button>
-    <button id="stop">Stop</button>
+    <title>hackathon</title>
 
-    <div id="editor"></div>
-    <div id="candlestick-chart"></div>
-    <div id="account-value-chart"></div>
-</body>
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 
-<script src="{{ url_for('static', filename='jquery.js') }}"></script>
-<script src="{{ url_for('static', filename='ace-builds/src-noconflict/ace.js') }}"></script>
-<script src="{{ url_for('static', filename='oanda.js')}}"></script>
-<script src="{{ url_for('static', filename='highstock.js')}}"></script>
-<script src="{{ url_for('static', filename='exporting.js')}}"></script>
+    <!-- Custom styles for this template -->    
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 
-<script>
-	OANDA.baseURL = "https://api-fxpractice.oanda.com";
-	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
-	OANDA.auth.enabled = true;
-	var account_id = 3922748;
+  <style type="text/css"></style></head>
 
-    /*setup editor*/
-    var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
-    editor.getSession().setMode("ace/mode/python");
-    editor.getSession().setTabSize(4);
-    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
+  <body>
 
-    /* start and stop functions */
-    $("#start").click(function(){
-        var data = {};
-        data['code'] = editor.getValue();
-        var url = '/start/';
+    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <div id="header-logo"></div>
+        </div>
+      </div>
+    </div>
 
-        alert(JSON.stringify(data));
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6" >
+          <button id="start">Start</button>
+          <button id="stop">Stop</button>
+          <div id='editor'> </div>
+        </div>
+        <div class="col-lg-6">
+          <div class='row'>
+             <div class="col-lg-12">
+             <div id='candlestick-chart'> </div>
+            </div>
+          </div>
+          <div class='row'>
+           <div class="col-lg-12">
+           <div id='account-value-chart'> </div>
+           </div>
+          </div>
+       </div>
+      </div>
+    </div>
+  
+    <script src="{{ url_for('static', filename='jquery.js') }}"></script>
+    <script src="{{ url_for('static', filename='bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='ace-builds/src-noconflict/ace.js') }}"></script>
+    <script src="{{ url_for('static', filename='oanda.js')}}"></script>
+    <script src="{{ url_for('static', filename='highstock.js')}}"></script>
+    <script src="{{ url_for('static', filename='exporting.js')}}"></script>
+    <script src="{{ url_for('static', filename='indexjs.js') }}"></script>  
 
-        $.ajax({
-          type: "POST",
-          url: url,
-          data: JSON.stringify(data),
-          contentType: 'application/json; charset=utf-8',
-          dataType: 'json'
-        });
-    });
-
-    $("#stop").click(function(){
-        var url = '/stop/';
-
-        alert("starting to stop");
-
-        $.ajax({
-          type: "POST",
-          url: url,
-          contentType: 'application/json; charset=utf-8',
-          success: function(response) {
-            alert("stopped");
-          }
-        });
-    });
-
-    /* charts for candlesticks and portfolio value */
-    var rates = new Array();
-    var account_value = new Array();
-
-    function getHistory() {
-        OANDA.rate.history("EUR_USD", {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
-            var priceInfo = rateHistoryResponse.candles[0];
-            rates.push(parseOandaHistoryToArray(priceInfo));
-        });
-    }
-    
-    function getAccountInfo() {
-
-    }
-
-    function parseOandaHistoryToArray(rate) {
-        var testarray = new Array();
-        testarray = [Date.parse(rate.time), rate.openMid, rate.highMid, rate.lowMid, rate.closeMid];
-        return testarray
-    }
-
-    function constructor() {
-    	// initialize with oanda historical candles and dynamically update
-        OANDA.rate.history("EUR_USD", {count: 20, candleFormat: "midpoint"}, function(rateHistoryResponse) {
-            var priceInfo;
-            for (var i =0 ; i < 20; i++) {
-                priceInfo = rateHistoryResponse.candles[i];
-                rates.push(parseOandaHistoryToArray(priceInfo));
-            }
-
-            $('#candlestick-chart').highcharts('StockChart', {
-                chart : {
-                    events : {
-                        load : function() {
-                            var series = this.series[0];
-                            setInterval(function() {
-                                getHistory();
-                                series.addPoint(rates[rates.length - 1], true, true);
-                            }, 5000);
-                        }
-                    }
-                },
-
-                title : {
-                    text : 'Currency Pair Price'
-                },
-
-                series : [{
-                    type : 'candlestick',
-                    name : 'Currency Pair Price',
-                    data : rates,
-                }]
-            });
-        });
-
-        OANDA.account.listSpecific(account_id, function(accountInfoResponse){
-        	console.log(accountInfoResponse.balance);
-        	console.log(accountInfoResponse.unrealizedPl);
-        	console.log(accountInfoResponse.realizedPl);
-
-        	var totalPL = accountInfoResponse.unrealizedPl + accountInfoResponse.realizedPl;
-
-	        $('#account-value-chart').highcharts({
-	            chart: {
-	                //type: 'spline',
-	                //animation: Highcharts.svg, // don't animate in old IE
-	                //marginRight: 10,
-	                events: {
-	                    load: function() {
-	                        // set up the updating of the chart every few seconds
-	                        var series = this.series[0];
-	                        setInterval(function() {
-	                        	OANDA.account.listSpecific(account_id, function(updatedAccountInfoResponse){
-	                        		var x = new Date().getTime(); // current time
-
-	                        		var updatedTotalPL = updatedAccountInfoResponse.unrealizedPl 
-	                        							+ updatedAccountInfoResponse.realizedPl;
-
-	                        		var y = updatedTotalPL;
-	                            	
-	                            	series.addPoint([x, y], true, true);
-	                        	});
-	                        }, 5000);
-	                    }
-	                }
-	            },
-	            title: {
-	                text: 'Profit & Loss'
-	            },
-	            xAxis: {
-	                type: 'datetime',
-	                //tickPixelInterval: 150
-	            },
-	            yAxis: {
-	                title: {
-	                    text: 'Account Value ($)'
-	                },
-	                plotLines: [{
-	                    value: 0,
-	                    width: 5,
-	                    color: '#808080'
-	                }]
-	            },
-	            tooltip: {
-	                formatter: function() {
-	                        return '<b>'+ this.series.name +'</b><br/>'+
-	                        Highcharts.dateFormat('%Y-%m-%d %H:%M:%S', this.x) +'<br/>'+
-	                        Highcharts.numberFormat(this.y, 2);
-	                }
-	            },
-	            /*
-	            legend: {
-	                enabled: false
-	            },
-	            exporting: {
-	                enabled: false
-	            },
-	            */
-	            series: [{
-	                name: 'Account Balance',
-	                data: (function() {
-	                    // generate the initial array of data
-	                    var data = [],
-	                        time = (new Date()).getTime(),
-	                        i;
-	                    for (i = -15; i <= 0; i++) {
-	                        data.push({
-	                            x: time + i * 5000,
-	                            y: totalPL
-	                        });
-	                    }
-	                    return data;
-	                })(),
-	                color: 'green',
-	                negativeColor: '#BD5D55'
-	            }]
-	        });
-        });
-    }
-
-    constructor();
-
-</script>
-
-</html>
+</body></html>

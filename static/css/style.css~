@@ -1,0 +1,25 @@
+/* Move down content because we have a fixed navbar that is 50px tall */
+body {
+  padding-top: 50px;
+  padding-bottom: 20px;
+}
+
+
+/*additional media queries for better screen utilization */
+@media (min-width: 1920px) {
+  .container {
+    width: 1890px;
+  }
+}
+
+@media (min-width: 1680px) {
+  .container {
+    width: 1650px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container {
+    width: 1370px;
+  }
+}
