@@ -20,12 +20,10 @@ from flask import Flask
 flask_app = Flask(__name__)
 flask_app.config.update(
     CELERY_BROKER_URL='amqp://guest@localhost//',
+    CELERY_RESULT_BACKEND = 'amqp',
+    CELERY_IGNORE_RESULT = False
 )
 celery = make_celery(flask_app)
-
-
-token = "b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22"
-
 
 @celery.task()
 def rates(script):
@@ -33,7 +31,7 @@ def rates(script):
     for plotdata in alg.run():
         rates.backend.mark_as_started(
                     rates.request.id,
-                    plotdata=plotdata
+                    plot_data=plotdata
                     )
         
         print plotdata

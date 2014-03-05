@@ -20,15 +20,19 @@ class TradingAlgorithm(object):
             handle_data function definition.
         """
 
+        # just one pair for now
+        if not currency_pair:
+            self.currency_pair = "USD_JPY" 
+
         self.oanda_client = oandapy.API(environment="practice",access_token="b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22")
 
         self.algoscript = kwargs.pop('script', None)
 
-        self.data = self.oanda_client.get_prices(instruments="EUR_USD")
+        self.data = self.oanda_client.get_prices(instruments=self.currency_pair)
 
         self.account_id = 3922748
 
-        self.history_data = self.oanda_client.get_history(instrument = "EUR_USD",granularity = "S5",count = 500,candleFormat = "midpoint")
+        self.history_data = self.oanda_client.get_history(instrument = self.currency_pair,granularity = "S5",count = 500,candleFormat = "midpoint")
 
 
         if self.algoscript is not None:
@@ -41,15 +45,11 @@ class TradingAlgorithm(object):
             self._initialize = self.ns['initialize']
             self._handle_data = self.ns['handle_data']
 
-        # just one pair for now
-        if not currency_pair:
-            self.currency_pair = "EUR_USD" 
-
         #print self.oanda_client.get_accounts()
 
     #Supporting Library
     def get_prices (self, **params):
-        return self.oanda_client.get_history(instrument = "EUR_USD",granularity = "S5",count = 1,candleFormat = "midpoint")
+        return self.oanda_client.get_history(instrument = self.currency_pair,granularity = "S5",count = 1,candleFormat = "midpoint")
     
     def convert (self, data, **params):
         candles = data["candles"]
@@ -89,7 +89,7 @@ class TradingAlgorithm(object):
         data = np.std(a=data)
         return data
 
-    def mavg (self, data,timeperiod, **params):
+    def mavg (self, data, timeperiod, **params):
         data = data['close']
         output = talib.SMA(data, timeperiod = timeperiod)
         result = output.tolist()
@@ -99,15 +99,16 @@ class TradingAlgorithm(object):
     def order (self, units, side, **params):
         trade_expire = datetime.now() + timedelta(days=1)
         trade_expire = trade_expire.isoformat("T") + "Z"
-        return self.oanda_client.create_order(instrument = "EUR_USD", account_id = 3922748, units = units, side = side, type = "limit", expiry = trade_expire, price = 1.15)
+        return self.oanda_client.create_order(instrument = self.currency_pair, account_id = 3922748, units = units, side = side, type = "limit", expiry = trade_expire, price = 1.15)
 
     def get_current_close (self, **params):
-        return self.oanda_client.get_history(instrument = "EUR_USD",granularity = "S5",count = 1,candleFormat = "midpoint")["candles"][0]["closeMid"]
+        return self.oanda_client.get_history(instrument = self.currency_pair,granularity = "S5",count = 1,candleFormat = "midpoint")["candles"][0]["closeMid"]
     def initialize(self):
         self._initialize(self)
 
     def plot(self, datapoint, name):
-        self.plotdata[name] = datapoint
+        dataobj = [name, datapoint]
+        self.plotdata['values'].append(dataobj)
 
     def handle_data(self, data):
         self._handle_data(self,data)
@@ -127,7 +128,7 @@ class TradingAlgorithm(object):
 
         while True:
             if (time.time() - current_timestamp) >= 5:
-
+                self.plotdata['values'] = []
                 current_price =self.get_prices()
 
                 self.history_data["candles"].append(current_price["candles"][0])
@@ -147,5 +148,8 @@ class TradingAlgorithm(object):
                 current_timestamp = time.time()
                 
                 self.handle_data(data)
+
+                self.plotdata['time'] = current_timestamp
+                
 
                 yield self.plotdata

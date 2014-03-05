@@ -74,6 +74,7 @@ def start():
 
     response = {}
     response['plotnames'] = get_plot_names(data['code'])
+    print response
     return json.dumps(response)
 
 @app.route("/stop/", methods=['POST'])
@@ -105,16 +106,17 @@ def get_plot_points():
 
     if "TASK_ID" not in session:
         response['status'] = 'no_task_running'
-        print "no task running"
     else:
+        response['status'] = 'task_running'
         # running a task
         task_id = session['TASK_ID']
         task = rates.AsyncResult(task_id)
 
-        print task.info
-        response['data'] = task.info['plot_points']
+        if task.info is not None:
+            response['data'] = task.info['plot_data']
 
-    return response
+    print response
+    return json.dumps(response)
 
 
 if __name__ == "__main__":

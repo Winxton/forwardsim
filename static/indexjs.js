@@ -1,8 +1,8 @@
 
     OANDA.baseURL = "https://api-fxpractice.oanda.com";
-	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
-	OANDA.auth.enabled = true;
-	var account_id = 3922748;
+  	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
+  	OANDA.auth.enabled = true;
+  	var account_id = 3922748;
     var currency_pair = "USD_JPY";
 
     /*setup editor*/
@@ -10,23 +10,70 @@
     editor.setTheme("ace/theme/clouds_midnight");
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setTabSize(4);
-    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context, data):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
-
+    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context, data):\n    # handles a data event\n    # put your algorithm here and make trades\n    mavg = context.mavg(data, timeperiod=3)\n    context.plot(mavg, 'mavg')\n\n    print context.units\n");
     /* start and stop functions */
     $("#start").click(function(){
         var data = {};
         data['code'] = editor.getValue();
-        var url = '/start/';
-
         alert(JSON.stringify(data));
 
         $.ajax({
           type: "POST",
-          url: url,
+          url: '/start/',
           data: JSON.stringify(data),
           contentType: 'application/json; charset=utf-8',
           success: function(response){
+            // create time series for candlestick charts
             console.log(response);
+            
+            for (var i = 0; i<response.plotnames.length; i++) {
+              var plotName = response.plotnames[i];
+              console.log(plotName);
+
+              candlechart.addSeries({
+                id: plotName,
+                name: plotName,
+                data: []
+              });
+            }
+
+            // make a request for the line every few seconds
+            setInterval(
+              function() {
+                $.ajax({
+                    type: "GET",
+                    url: '/get-plot-points/',
+                    success: function(response) {
+                      if (response.status == "task_running") {
+
+                        var plotdata = response.data;
+                        var time = Math.round(plotdata.time);
+                        var time2 = new Date().getTime();
+                        alert(time2);
+
+                        // go through datapoints
+                        for (data in plotdata.values) {
+                          var candleplotdata = plotdata.values[data];
+                          var name = candleplotdata[0];
+                          var val = candleplotdata[1];
+
+                          console.log(name);
+                          console.log(time);
+                          console.log(val);
+
+                          var point = [time, val];
+
+                          var series = candlechart.get(name);
+                          console.log(point);
+                          series.addPoint(point);
+                        }
+
+                      }
+                    },
+                    dataType: 'json'
+                });
+            }, 10000);
+
           },
           dataType: 'json'
         });
@@ -46,6 +93,7 @@
     });
 
     /* charts for candlesticks and portfolio value */
+    var candlechart;
     var rates = new Array();
     var account_value = new Array();
     var newtick;
@@ -78,8 +126,9 @@
             lasttick = rates[19];
             newtick = lasttick;
 
-            $('#candlestick-chart').highcharts('StockChart', {
+            candlechart = new Highcharts.StockChart({
                 chart : {
+                    renderTo: 'candlestick-chart',
                     borderRadius: 0,
                     backgroundColor: '#222222',
                     style: {
