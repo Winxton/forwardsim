@@ -10,7 +10,7 @@
     editor.setTheme("ace/theme/clouds_midnight");
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setTabSize(4);
-    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context, data):\n    # handles a data event\n    # put your algorithm here and make trades\n    mavg = context.mavg(data, timeperiod=3)\n    context.plot(mavg, 'mavg')\n\n    print context.units\n");
+    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context, data):\n    # handles a data event\n    # put your algorithm here and make trades\n    mavg3 = context.mavg(data, timeperiod=3)\n    context.plot(mavg3, 'mavg3')\n\n    mavg8 = context.mavg(data, timeperiod=8)\n    context.plot(mavg8, 'mavg8')\n");
     editor.setFontSize(20);
 
     /* start and stop functions */
@@ -139,9 +139,7 @@
     function getTransactionDetail(id) {
         OANDA.transaction.listSpecific(account_id, id, function(transactionDetailResponse) {
             transaction_detail = transactionDetailResponse;
-            if (transaction_detail.id != latest_transaction_history.id) {
-                $('#history tr:last').after('<tr><td>' + transaction_detail.id + '</td><td>' + transaction_detail.time + '</td><td>' + transaction_detail.side + '</td><td>' + transaction_detail.pl + '</td></tr>');
-            }
+            $('#history tr:last').after('<tr><td>' + transaction_detail.id + '</td><td>' + transaction_detail.instrument + '</td><td>' + transaction_detail.time + '</td><td>' + transaction_detail.side + '</td><td>' + transaction_detail.units + '</td><td>' + transaction_detail.price + '</td><td>' + transaction_detail.pl + '</td></tr>');
         });
     }
     
@@ -158,13 +156,13 @@
     function initialize() 
     {
     	// initialize with oanda historical candles and dynamically update
-        OANDA.rate.history(currency_pair, {count: 20, candleFormat: "midpoint"}, function(rateHistoryResponse) {
+        OANDA.rate.history(currency_pair, {count: 30, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             var price;
-            for (var i = 0 ; i < 20; i++) {
+            for (var i = 0 ; i < 30; i++) {
                 price = rateHistoryResponse.candles[i];
                 rates.push(parseOandaHistoryToArray(price));
             }
-            lasttick = rates[19];
+            lasttick = rates[29];
             newtick = lasttick;
 
             candlechart = new Highcharts.StockChart({

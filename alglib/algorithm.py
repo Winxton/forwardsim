@@ -123,8 +123,12 @@ class TradingAlgorithm(object):
         return avg
 
     def position (self) :
-        pos_dic = self.oanda_client.get_position(account_id = self.account_id, instrument = self.currency_pair)
-        return pos_dic["units"] * pos_dic["avgPrice"]
+        try:
+            pos_dic = self.oanda_client.get_position(account_id = self.account_id, instrument = self.currency_pair)
+            return pos_dic["units"] * pos_dic["avgPrice"]
+        except:
+            return 0
+        
 
     #Execution
     def run(self):
