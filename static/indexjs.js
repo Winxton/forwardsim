@@ -51,6 +51,7 @@
     var transaction_history = new Array();
     var newtick;
     var lasttick;
+    var latest_transaction_history;
 
     function getHistory() {
         OANDA.rate.history(currency_pair, {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
@@ -58,8 +59,14 @@
         });
     }
 
-    function getTransaction() {
-        OANDA.transaction.list(account_id, {instrument: currency_pair}, function(transactionHistoryResponse) {
+    function getLatestTransaction() {
+        OANDA.transaction.list(account_id, {instrument: currency_pair, count: 1}, function(transactionHistoryResponse) {
+            latest_transaction_history = transactionHistoryResponse.transactions[0];
+        });
+    }
+
+    function getTransactionHistory() {
+        OANDA.transaction.list(account_id, {instrument: currency_pair, minId: latest_transaction_history.id}, function(transactionHistoryResponse) {
             transaction_history = transactionHistoryResponse.transactions;
         });
     }
@@ -97,6 +104,7 @@
                             var series = this.series[0];
                             setInterval(function() {
                                 getHistory();
+                                getTransactionHistory();
                                 if (lasttick.toString() != newtick.toString()) {
                                     series.addPoint(newtick, true, false);
                                     lasttick = newtick;
@@ -465,6 +473,7 @@
 	            }]
 	        });
         });
+	getLatestTransaction();
     }
 
     initialize();
