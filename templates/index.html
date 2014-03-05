@@ -15,7 +15,12 @@
     <!-- Custom styles for this template -->    
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
 
-  <style type="text/css"></style></head>
+  <style type="text/css">
+  .tftable {font-size:12px;color:#fbfbfb;width:100%;border-width: 1px;border-color: #686767;border-collapse: collapse;}
+  .tftable th {font-size:12px;background-color:#171515;border-width: 1px;padding: 8px;border-style: solid;border-color: #686767;text-align:left;}
+  .tftable tr {background-color:#2f2f2f;}
+  .tftable td {font-size:12px;border-width: 1px;padding: 8px;border-style: solid;border-color: #686767;}
+  </style></head>
 
   <body>
 
@@ -41,7 +46,25 @@
             <option>30 minutes</option>
             <option>hourly</option>
           </select>
-          <div id='editor'> </div>
+          <div class='row'>
+             <div class="col-sm-12">
+             <div id='editor'> </div>
+            </div>
+          </div>
+          <div class='row'>
+           <div class="col-sm-12">
+           <div id='history'>
+           <table class="tftable" border="1">
+           <tr><th>Id</th><th>Time</th><th>Side</th><th>Profit/Loss</th></tr>
+           <tr><td>Row:1 Cell:1</td><td>Row:1 Cell:2</td><td>Row:1 Cell:3</td><td>Row:1 Cell:4</td></tr>
+           <tr><td>Row:2 Cell:1</td><td>Row:2 Cell:2</td><td>Row:2 Cell:3</td><td>Row:2 Cell:4</td></tr>
+           <tr><td>Row:3 Cell:1</td><td>Row:3 Cell:2</td><td>Row:3 Cell:3</td><td>Row:3 Cell:4</td></tr>
+           <tr><td>Row:4 Cell:1</td><td>Row:4 Cell:2</td><td>Row:4 Cell:3</td><td>Row:4 Cell:4</td></tr>
+           </table>
+           </div>
+           </div>
+          </div>
+
         </div>
         <div class="col-sm-6">
           <div class='row'>

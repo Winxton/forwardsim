@@ -110,6 +110,7 @@
     var newtick;
     var lasttick;
     var latest_transaction_history;
+    var transaction_detail;
 
     function getHistory() {
         OANDA.rate.history(currency_pair, {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
@@ -126,6 +127,12 @@
     function getTransactionHistory() {
         OANDA.transaction.list(account_id, {instrument: currency_pair, minId: latest_transaction_history.id}, function(transactionHistoryResponse) {
             transaction_history = transactionHistoryResponse.transactions;
+        });
+    }
+
+    function getTransactionDetail(id) {
+        OANDA.transaction.listSpecific(account_id, id, function(transactionDetailResponse) {
+            transaction_detail = transactionDetailResponse;
         });
     }
     
