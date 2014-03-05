@@ -139,7 +139,9 @@
     function getTransactionDetail(id) {
         OANDA.transaction.listSpecific(account_id, id, function(transactionDetailResponse) {
             transaction_detail = transactionDetailResponse;
-            $('#history tr:last').after('<tr><td>' + transaction_detail.id + '</td><td>' + transaction_detail.time + '</td><td>' + transaction_detail.side + '</td><td>' + transaction_detail.pl + '</td></tr>');
+            if (transaction_detail.id != latest_transaction_history.id) {
+                $('#history tr:last').after('<tr><td>' + transaction_detail.id + '</td><td>' + transaction_detail.time + '</td><td>' + transaction_detail.side + '</td><td>' + transaction_detail.pl + '</td></tr>');
+            }
         });
     }
     
