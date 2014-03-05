@@ -129,12 +129,17 @@
     function getTransactionHistory() {
         OANDA.transaction.list(account_id, {instrument: currency_pair, minId: latest_transaction_history.id}, function(transactionHistoryResponse) {
             transaction_history = transactionHistoryResponse.transactions;
+            transaction_history.forEach(function(entry){
+                getTransactionDetail(entry.id);
+            });
+            getLatestTransaction();
         });
     }
 
     function getTransactionDetail(id) {
         OANDA.transaction.listSpecific(account_id, id, function(transactionDetailResponse) {
             transaction_detail = transactionDetailResponse;
+            $('#history tr:last').after('<tr><td>' + transaction_detail.id + '</td><td>' + transaction_detail.time + '</td><td>' + transaction_detail.side + '</td><td>' + transaction_detail.pl + '</td></tr>');
         });
     }
     
@@ -543,10 +548,7 @@
 	            }]
 	        });
         });
-
-
-      
-	     getLatestTransaction();
+	    getLatestTransaction();
     }
 
     initialize();
