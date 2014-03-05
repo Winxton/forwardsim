@@ -1,4 +1,4 @@
-    
+
     OANDA.baseURL = "https://api-fxpractice.oanda.com";
 	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
 	OANDA.auth.enabled = true;
@@ -10,7 +10,7 @@
     editor.setTheme("ace/theme/clouds_midnight");
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setTabSize(4);
-    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
+    editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context, data):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
 
     /* start and stop functions */
     $("#start").click(function(){
@@ -25,6 +25,9 @@
           url: url,
           data: JSON.stringify(data),
           contentType: 'application/json; charset=utf-8',
+          success: function(response){
+            console.log(response);
+          },
           dataType: 'json'
         });
     });
@@ -32,14 +35,12 @@
     $("#stop").click(function(){
         var url = '/stop/';
 
-        alert("starting to stop");
-
         $.ajax({
           type: "POST",
           url: url,
           contentType: 'application/json; charset=utf-8',
           success: function(response) {
-            alert("stopped");
+            alert("STOPPED");
           }
         });
     });

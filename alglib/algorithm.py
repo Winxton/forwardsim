@@ -106,7 +106,10 @@ class TradingAlgorithm(object):
     def initialize(self):
         self._initialize(self)
 
-    def handle_data(self,data):
+    def plot(self, datapoint, name):
+        self.plotdata[name] = datapoint
+
+    def handle_data(self, data):
         self._handle_data(self,data)
 
     def vwag (self, data, timeperiod, **params):
@@ -116,10 +119,11 @@ class TradingAlgorithm(object):
         avg = result[-1]
         return avg
 
-
     #Execution
     def run(self):
         current_timestamp = time.time()
+        self.initialize()
+        self.plotdata = {}
 
         while True:
             if (time.time() - current_timestamp) >= 5:
@@ -141,8 +145,7 @@ class TradingAlgorithm(object):
                 """
 
                 current_timestamp = time.time()
-                self.initialize()
+                
                 self.handle_data(data)
 
-
-
+                yield self.plotdata

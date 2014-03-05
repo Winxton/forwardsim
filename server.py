@@ -30,6 +30,24 @@ app.secret_key = 'some random secret key'
 
 from flaskcelery.tasks import rates
 
+def get_plot_names(s):
+    begin = 0
+    plotname = []
+
+    while True:
+        index = s.find("plot(", begin) # plot(hello, 'hi')
+        if -1 == index:
+            break
+        next = s.find(")", index)
+
+        left = s.find("\'", index)
+        right = s.find("\'", left + 1)
+
+        plotname.append(s[left + 1 : right])
+        begin = next + 1
+
+    return plotname
+
 # webapp
 
 @app.route("/")
@@ -54,11 +72,12 @@ def start():
 
     print task_id
 
-    return "OK"
+    response = {}
+    response['plotnames'] = get_plot_names(data['code'])
+    return json.dumps(response)
 
 @app.route("/stop/", methods=['POST'])
 def stop():
-    print "stuff123"
     print session
 
     response = {}
@@ -79,6 +98,24 @@ def stop():
     print response
 
     return json.dumps(response)
+
+@app.route("/get-plot-points/")
+def get_plot_points():
+    response = {}
+
+    if "TASK_ID" not in session:
+        response['status'] = 'no_task_running'
+        print "no task running"
+    else:
+        # running a task
+        task_id = session['TASK_ID']
+        task = rates.AsyncResult(task_id)
+
+        print task.info
+        response['data'] = task.info['plot_points']
+
+    return response
+
 
 if __name__ == "__main__":
     app.debug = True

@@ -30,4 +30,10 @@ token = "b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22"
 @celery.task()
 def rates(script):
     alg = TradingAlgorithm(script=script)
-    alg.run()
+    for plotdata in alg.run():
+        rates.backend.mark_as_started(
+                    rates.request.id,
+                    plotdata=plotdata
+                    )
+        
+        print plotdata
