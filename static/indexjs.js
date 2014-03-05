@@ -7,7 +7,7 @@
 
     /*setup editor*/
     var editor = ace.edit("editor");
-    editor.setTheme("ace/theme/monokai");
+    editor.setTheme("ace/theme/clouds_midnight");
     editor.getSession().setMode("ace/mode/python");
     editor.getSession().setTabSize(4);
     editor.setValue("def initialize(context):\n    # set data and variables used in your trading algorithm\n    context.units = 1000\n\ndef handle_data(context):\n    # handles a data event\n    # put your algorithm here and make trades\n    \n    print context.units\n");
@@ -79,6 +79,11 @@
 
             $('#candlestick-chart').highcharts('StockChart', {
                 chart : {
+                    borderRadius: 0,
+                    backgroundColor: '#222222',
+                    style: {
+                        color: '#888888'
+                    },
                     events : {
                         load : function() {
                             var series = this.series[0];
@@ -90,12 +95,144 @@
                                 }
                             }, 3000);
                         }
-                    }
+                    },
+
                 },
 
                 title : {
-                    text : 'Currency Pair Price'
+                    text : 'Currency Pair Price',
+                    style: {
+                        color: "#94d600"
+                    }
                 },
+
+                scrollbar : {
+                                enabled : false
+                },
+
+                plotOptions: {
+                      series: {
+                         nullColor: '#444444'
+                      },
+                      line: {
+                         dataLabels: {
+                            color: '#CCC'
+                         },
+                         marker: {
+                            lineColor: '#333'
+                         }
+                      },
+                      spline: {
+                         marker: {
+                            lineColor: '#333'
+                         }
+                      },
+                      scatter: {
+                         marker: {
+                            lineColor: '#333'
+                         }
+                      },
+                      candlestick: {
+                         lineColor: 'white',
+                         color: 'red',
+                         upColor: '#94d600'
+                      }
+                   },
+
+                   rangeSelector: {
+                        buttonTheme: {
+                           stroke: '#888888',
+                           fill: '#444444',
+                           backgroundColor: '#888888'
+,                           style: {
+                              color: '#888888',
+                              fontWeight: 'bold'
+                           },
+                           states: {
+                              hover: {
+                                 stroke: '#888888',
+                                 style: {
+                                    color: '#888888'
+                                 }
+                              },
+                              select: {
+                                 stroke: '#000000',
+                                 style: {
+                                    color: 'green'
+                                 }
+                              }
+                           }
+                        },
+                        inputStyle: {
+                           backgroundColor: '#888888',
+                           color: 'silver'
+                        },
+                        labelStyle: {
+                           color: 'silver'
+                        }
+                     },
+
+                  navigator: {
+                     handles: {
+                        backgroundColor: '#888888',
+                        borderColor: '#888888'
+                     },
+                     outlineColor: '#CCC',
+                     maskFill: 'rgba(16, 16, 16, 0.5)',
+                     series: {
+                        color: '#888888',
+                        lineColor: '#888888'
+                     }
+                  },
+
+
+
+                xAxis: {
+                      gridLineWidth: 0.5,
+                      gridLineColor: '#888888',
+                      lineColor: '#888888',
+                      lineWidth: 0.5,
+                      minorGridLineWidth: 0,
+                      tickColor: '#888888',
+                      labels: {
+                         style: {
+                            color: '#888888',
+                            font: '11px Trebuchet MS, Verdana, sans-serif'
+                         }
+                      },
+                      title: {
+                         style: {
+                            color: '#333',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+
+                         }            
+                      }
+                   },
+                   yAxis: {
+                      minorTickInterval: 'auto',
+                      gridLineColor: '#888888',
+                      lineColor: '#888888',
+                      lineWidth: 0.5,
+                      minorGridLineWidth: 0,
+                      gridLineWidth: 0.5,
+                      tickColor: '#888888',
+                      labels: {
+                         style: {
+                            color: '#888888',
+                            font: '11px Trebuchet MS, Verdana, sans-serif'
+                         }
+                      },
+                      title: {
+                         style: {
+                            color: '#888888',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+                         }            
+                      }
+                   },
 
                 series : [{
                     type : 'candlestick',
@@ -114,6 +251,11 @@
 
 	        $('#account-value-chart').highcharts({
 	            chart: {
+                    borderRadius: 0,
+                    backgroundColor: '#222222',
+                    style: {
+                        color: '#888888'
+                    },
 	                //type: 'spline',
 	                //animation: Highcharts.svg, // don't animate in old IE
 	                //marginRight: 10,
@@ -160,6 +302,135 @@
 	                        Highcharts.numberFormat(this.y, 2);
 	                }
 	            },
+
+                title : {
+                    text : 'Currency Pair Price',
+                    style: {
+                        color: "#94d600"
+                    }
+                },
+
+                plotOptions: {
+                      series: {
+                         nullColor: '#444444'
+                      },
+                      line: {
+                         dataLabels: {
+                            color: '#CCC'
+                         },
+                         marker: {
+                            lineColor: '#333'
+                         }
+                      },
+                      spline: {
+                         marker: {
+                            lineColor: '#333'
+                         }
+                      },
+                      scatter: {
+                         marker: {
+                            lineColor: '#333'
+                         }
+                      },
+                      candlestick: {
+                         lineColor: 'white',
+                         color: 'red',
+                         upColor: '#94d600'
+                      }
+                   },
+
+                rangeSelector: {
+                     buttonTheme: {
+                        stroke: '#444444',
+                        style: {
+                           color: '#444444',
+                           fontWeight: 'bold'
+                        },
+                        states: {
+                           hover: {
+                              stroke: '#888888',
+                              style: {
+                                 color: '#888888'
+                              }
+                           },
+                           select: {
+                              stroke: '#000000',
+                              style: {
+                                 color: 'green'
+                              }
+                           }
+                        }
+                     },
+                     inputStyle: {
+                        backgroundColor: '#333',
+                        color: 'silver'
+                     },
+                     labelStyle: {
+                        color: 'silver'
+                     }
+                  },
+
+                  navigator: {
+                     handles: {
+                        backgroundColor: '#888888',
+                        borderColor: '#888888'
+                     },
+                     outlineColor: '#CCC',
+                     maskFill: 'rgba(16, 16, 16, 0.5)',
+                     series: {
+                        color: '#888888',
+                        lineColor: '#888888'
+                     }
+                  },
+
+
+
+                xAxis: {
+                      gridLineWidth: 0.5,
+                      gridLineColor: '#888888',
+                      lineColor: '#888888',
+                      lineWidth: 0.5,
+                      minorGridLineWidth: 0,
+                      tickColor: '#888888',
+                      labels: {
+                         style: {
+                            color: '#888888',
+                            font: '11px Trebuchet MS, Verdana, sans-serif'
+                         }
+                      },
+                      title: {
+                         style: {
+                            color: '#333',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+
+                         }            
+                      }
+                   },
+                   yAxis: {
+                      minorTickInterval: 'auto',
+                      gridLineColor: '#888888',
+                      lineColor: '#888888',
+                      lineWidth: 0.5,
+                      minorGridLineWidth: 0,
+                      gridLineWidth: 0.5,
+                      tickColor: '#888888',
+                      labels: {
+                         style: {
+                            color: '#888888',
+                            font: '11px Trebuchet MS, Verdana, sans-serif'
+                         }
+                      },
+                      title: {
+                         style: {
+                            color: '#888888',
+                            fontWeight: 'bold',
+                            fontSize: '12px',
+                            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+                         }            
+                      }
+                   },
 	            /*
 	            legend: {
 	                enabled: false
