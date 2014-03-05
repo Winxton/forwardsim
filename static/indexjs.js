@@ -28,7 +28,8 @@
           success: function(response){
             // create time series for candlestick charts
             console.log(response);
-            
+            $('#alg_running_label').show();
+
             for (var i = 0; i<response.plotnames.length; i++) {
               var plotName = response.plotnames[i];
               console.log(plotName);
@@ -98,6 +99,7 @@
           contentType: 'application/json; charset=utf-8',
           success: function(response) {
             console.log("stopped!");
+            $('#alg_running_label').hide();
           }
         });
     });
