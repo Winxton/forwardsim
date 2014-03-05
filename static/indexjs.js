@@ -1,9 +1,10 @@
 
     OANDA.baseURL = "https://api-fxpractice.oanda.com";
+
   	OANDA.auth.token = 'b47aa58922aeae119bcc4de139f7ea1e-27de2d1074bb442b4ad2fe0d637dec22';
   	OANDA.auth.enabled = true;
   	var account_id = 3922748;
-    var currency_pair = "USD_JPY";
+    var currency_pair = "EUR_USD";
 
     /*setup editor*/
     var editor = ace.edit("editor");
@@ -96,12 +97,26 @@
     var candlechart;
     var rates = new Array();
     var account_value = new Array();
+    var transaction_history = new Array();
     var newtick;
     var lasttick;
+    var latest_transaction_history;
 
     function getHistory() {
         OANDA.rate.history(currency_pair, {count: 1, candleFormat: "midpoint"}, function(rateHistoryResponse) {
             newtick = parseOandaHistoryToArray(rateHistoryResponse.candles[0]);
+        });
+    }
+
+    function getLatestTransaction() {
+        OANDA.transaction.list(account_id, {instrument: currency_pair, count: 1}, function(transactionHistoryResponse) {
+            latest_transaction_history = transactionHistoryResponse.transactions[0];
+        });
+    }
+
+    function getTransactionHistory() {
+        OANDA.transaction.list(account_id, {instrument: currency_pair, minId: latest_transaction_history.id}, function(transactionHistoryResponse) {
+            transaction_history = transactionHistoryResponse.transactions;
         });
     }
     
@@ -139,6 +154,7 @@
                             var series = this.series[0];
                             setInterval(function() {
                                 getHistory();
+                                getTransactionHistory();
                                 if (lasttick.toString() != newtick.toString()) {
                                     series.addPoint(newtick, true, false);
                                     lasttick = newtick;
@@ -193,8 +209,8 @@
                         buttonTheme: {
                            stroke: '#888888',
                            fill: '#444444',
-                           backgroundColor: '#888888'
-,                           style: {
+                           backgroundColor: '#888888',
+                           style: {
                               color: '#888888',
                               fontWeight: 'bold'
                            },
@@ -507,6 +523,7 @@
 	            }]
 	        });
         });
+	getLatestTransaction();
     }
 
     initialize();
